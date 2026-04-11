@@ -1,0 +1,31 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Phunky\\LaravelMessagingReactions\\Reaction\:\:message\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Reaction.php
+
+		-
+			message: '#^Method Phunky\\LaravelMessagingReactions\\Reaction\:\:participant\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Reaction.php
+
+		-
+			message: '#^Unable to resolve the template type TRelatedModel in call to method Illuminate\\Database\\Eloquent\\Model\:\:belongsTo\(\)$#'
+			identifier: argument.templateType
+			count: 2
+			path: src/Reaction.php
+
+		-
+			message: '#^Method Phunky\\LaravelMessagingReactions\\ReactionService\:\:getReactionSummary\(\) should return Illuminate\\Support\\Collection\<int, array\{reaction\: string, count\: int, participant_ids\: list\<int\|string\>\}\> but returns Illuminate\\Support\\Collection\<int, array\{reaction\: string, count\: int\<0, max\>, participant_ids\: array\<int, mixed\>\}\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/ReactionService.php
+
+		-
+			message: '#^PHPDoc tag @var with type Phunky\\LaravelMessaging\\Models\\Message is not subtype of native type \$this\(Phunky\\LaravelMessagingReactions\\ReactionsExtension\)\.$#'
+			identifier: varTag.nativeType
+			count: 1
+			path: src/ReactionsExtension.php
