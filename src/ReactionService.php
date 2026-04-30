@@ -58,7 +58,7 @@ class ReactionService
 
         $model->load('participant');
 
-        $this->touchConversationActivity($conversation, $model->updated_at, 'reaction.updated');
+        $this->touchConversationActivity($conversation, now(), 'reaction.updated');
 
         event(new ReactionAdded($model, $message, $messageable));
 
