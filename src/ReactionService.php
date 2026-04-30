@@ -3,13 +3,13 @@
 namespace Phunky\LaravelMessagingReactions;
 
 use Illuminate\Support\Collection;
-use Phunky\LaravelMessagingReactions\Events\ReactionAdded;
-use Phunky\LaravelMessagingReactions\Events\ReactionRemoved;
-use Phunky\LaravelMessagingReactions\Exceptions\ReactionException;
 use Phunky\LaravelMessaging\Contracts\Messageable;
 use Phunky\LaravelMessaging\Models\Conversation;
 use Phunky\LaravelMessaging\Models\Message;
 use Phunky\LaravelMessaging\Services\MessagingService;
+use Phunky\LaravelMessagingReactions\Events\ReactionAdded;
+use Phunky\LaravelMessagingReactions\Events\ReactionRemoved;
+use Phunky\LaravelMessagingReactions\Exceptions\ReactionException;
 
 class ReactionService
 {
@@ -40,6 +40,8 @@ class ReactionService
         if ($existing && $existing->reaction === $reaction) {
             $value = $existing->reaction;
             $existing->delete();
+            $this->touchConversationActivity($conversation, now(), 'reaction.removed');
+
             event(new ReactionRemoved($message, $messageable, $value));
 
             return null;
@@ -55,6 +57,8 @@ class ReactionService
         );
 
         $model->load('participant');
+
+        $this->touchConversationActivity($conversation, now(), 'reaction.updated');
 
         event(new ReactionAdded($model, $message, $messageable));
 
@@ -79,8 +83,16 @@ class ReactionService
 
         $value = $row->reaction;
         $row->delete();
+        $this->touchConversationActivity($conversation, now(), 'reaction.removed');
 
         event(new ReactionRemoved($message, $messageable, $value));
+    }
+
+    protected function touchConversationActivity(Conversation $conversation, mixed $activityAt, string $activityType): void
+    {
+        if (method_exists($this->messaging, 'touchConversationActivity')) {
+            $this->messaging->touchConversationActivity($conversation, $activityAt, $activityType);
+        }
     }
 
     /**

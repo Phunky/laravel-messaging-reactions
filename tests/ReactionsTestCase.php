@@ -3,9 +3,9 @@
 namespace Phunky\LaravelMessagingReactions\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Phunky\LaravelMessagingReactions\ReactionsExtension;
-use Phunky\LaravelMessaging\MessagingServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
+use Phunky\LaravelMessaging\MessagingServiceProvider;
+use Phunky\LaravelMessagingReactions\ReactionsExtension;
 
 abstract class ReactionsTestCase extends Orchestra
 {

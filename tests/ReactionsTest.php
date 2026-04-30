@@ -2,17 +2,17 @@
 
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
+use Phunky\LaravelMessaging\Exceptions\CannotMessageException;
+use Phunky\LaravelMessaging\Services\MessagingService;
 use Phunky\LaravelMessagingReactions\Events\ReactionAdded;
 use Phunky\LaravelMessagingReactions\Events\ReactionRemoved;
 use Phunky\LaravelMessagingReactions\Exceptions\ReactionException;
 use Phunky\LaravelMessagingReactions\Reaction;
 use Phunky\LaravelMessagingReactions\ReactionService;
 use Phunky\LaravelMessagingReactions\Tests\Fixtures\User;
-use Phunky\LaravelMessaging\Exceptions\CannotMessageException;
-use Phunky\LaravelMessaging\Models\Message;
-use Phunky\LaravelMessaging\Services\MessagingService;
 
 function reactionUsers(): array
 {
@@ -239,8 +239,14 @@ describe('broadcasting', function () {
         expect($event)->toBeInstanceOf(ShouldBroadcast::class)
             ->toBeInstanceOf(ShouldDispatchAfterCommit::class)
             ->and($event->broadcastWhen())->toBeTrue()
-            ->and($event->broadcastOn()[0]->name)->toBe('private-messaging.conversation.'.$conversation->getKey())
-            ->and($event->broadcastAs())->toBe('messaging.reaction.added');
+            ->and($event->broadcastOn()[0]->name)->toBeIn([
+                'private-messaging.conversation.'.$conversation->getKey(),
+                'presence-messaging.conversation.'.$conversation->getKey(),
+            ])
+            ->and($event->broadcastAs())->toBe(ReactionAdded::BROADCAST_NAME)
+            ->and($event->broadcastWith()['conversation_id'])->toBe($conversation->getKey())
+            ->and($event->broadcastWith()['message_id'])->toBe($message->getKey())
+            ->and($event->broadcastWith()['reaction_id'])->toBe($row->getKey());
     });
 
     it('skips broadcasting ReactionAdded when broadcasting is disabled', function () {
@@ -274,8 +280,14 @@ describe('broadcasting', function () {
         expect($event)->toBeInstanceOf(ShouldBroadcast::class)
             ->toBeInstanceOf(ShouldDispatchAfterCommit::class)
             ->and($event->broadcastWhen())->toBeTrue()
-            ->and($event->broadcastOn()[0]->name)->toBe('private-messaging.conversation.'.$conversation->getKey())
-            ->and($event->broadcastAs())->toBe('messaging.reaction.removed');
+            ->and($event->broadcastOn()[0]->name)->toBeIn([
+                'private-messaging.conversation.'.$conversation->getKey(),
+                'presence-messaging.conversation.'.$conversation->getKey(),
+            ])
+            ->and($event->broadcastAs())->toBe(ReactionRemoved::BROADCAST_NAME)
+            ->and($event->broadcastWith()['conversation_id'])->toBe($conversation->getKey())
+            ->and($event->broadcastWith()['message_id'])->toBe($message->getKey())
+            ->and($event->broadcastWith()['reaction'])->toBe('👍');
     });
 });
 
@@ -289,7 +301,7 @@ describe('Message macro', function () {
 
         $message->refresh();
 
-        expect($message->reactions())->toBeInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class)
+        expect($message->reactions())->toBeInstanceOf(HasMany::class)
             ->and($message->reactions()->count())->toBe(1);
     });
 });
