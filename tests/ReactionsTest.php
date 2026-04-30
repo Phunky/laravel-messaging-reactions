@@ -239,7 +239,10 @@ describe('broadcasting', function () {
         expect($event)->toBeInstanceOf(ShouldBroadcast::class)
             ->toBeInstanceOf(ShouldDispatchAfterCommit::class)
             ->and($event->broadcastWhen())->toBeTrue()
-            ->and($event->broadcastOn()[0]->name)->toBe('private-messaging.conversation.'.$conversation->getKey())
+            ->and($event->broadcastOn()[0]->name)->toBeIn([
+                'private-messaging.conversation.'.$conversation->getKey(),
+                'presence-messaging.conversation.'.$conversation->getKey(),
+            ])
             ->and($event->broadcastAs())->toBe(ReactionAdded::BROADCAST_NAME)
             ->and($event->broadcastWith()['conversation_id'])->toBe($conversation->getKey())
             ->and($event->broadcastWith()['message_id'])->toBe($message->getKey())
@@ -277,7 +280,10 @@ describe('broadcasting', function () {
         expect($event)->toBeInstanceOf(ShouldBroadcast::class)
             ->toBeInstanceOf(ShouldDispatchAfterCommit::class)
             ->and($event->broadcastWhen())->toBeTrue()
-            ->and($event->broadcastOn()[0]->name)->toBe('private-messaging.conversation.'.$conversation->getKey())
+            ->and($event->broadcastOn()[0]->name)->toBeIn([
+                'private-messaging.conversation.'.$conversation->getKey(),
+                'presence-messaging.conversation.'.$conversation->getKey(),
+            ])
             ->and($event->broadcastAs())->toBe(ReactionRemoved::BROADCAST_NAME)
             ->and($event->broadcastWith()['conversation_id'])->toBe($conversation->getKey())
             ->and($event->broadcastWith()['message_id'])->toBe($message->getKey())
