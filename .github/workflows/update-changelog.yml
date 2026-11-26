@@ -22,7 +22,7 @@ jobs:
       # makes the CLI abort. Use a multiline block for `release-notes` so the body does not break Docker
       # arg passing to the action's entrypoint.sh (which would leave `--latest-version` empty).
       - name: Update Changelog
-        uses: stefanzweifel/changelog-updater-action@v1.12.0
+        uses: stefanzweifel/changelog-updater-action@v1.13.3
         with:
           latest-version: ${{ github.event.release.tag_name }}
           release-notes: |
